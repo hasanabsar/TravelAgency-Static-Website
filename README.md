@@ -1,2 +1,2 @@
-# TravelAgency-Static-Website
-TravelAgency Static Website Using: HTML, CSS, JS, PHP
+# travel-agency-static-website
+Responsive Static Website for Travel Agency
