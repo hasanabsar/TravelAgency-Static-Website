@@ -1,4 +1,3 @@
-
 <?php
 
 include 'connection.php';
@@ -11,13 +10,25 @@ if(isset($_POST['submit'])){
     $date = $_POST['date'];
     $destination = $_POST['destination'];
     
+    $sql = "insert into `travelagency`.`reservation` 
+    (fullname, number, guest, date, destination)
+    values ('$fullname', '$number', '$guest', '$date', '$destination')";
 
-      $sql = "insert into `travelagency`.`booking`
-      (fullname, number, guest, date, destination)
-      values('$fullname', '$number', '$guest', '$date', '$destination')
+  $result =  mysqli_query($connect, $sql);
+
+  if($result){
+      echo "
+        <script>
+            alert('form has been submitted');
+        </script>
+
       ";
+      // header('location: index.html');
+  }else{
+    die(mysqli_connect_error());
+  }
 
-      $result = mysqli_query($connect, $sql);
+  mysqli_close($connect);
 
 }
 
@@ -55,7 +66,16 @@ https://inside-dev.com/tm-580-woox-travel
 
 -->
   </head>
+<script>
+  .error-border {
+  border: 2px solid red;
+}
 
+.valid-border {
+  border: 2px solid green;
+}
+
+</script>
 <body>
 
   <!-- ***** Preloader Start ***** -->
@@ -87,8 +107,8 @@ https://inside-dev.com/tm-580-woox-travel
                         <li><a href="index.html">Home</a></li>
                         <li><a href="about.html">About</a></li>
                         <li><a href="deals.html">Deals</a></li>
-                        <li><a href="reservation.php" class="active">Reservation</a></li>
-                        <li><a href="reservation.php">Book Yours</a></li>
+                        <li><a href="reservation.html" class="active">Reservation</a></li>
+                        <li><a href="reservation.html">Book Yours</a></li>
                     </ul>   
                     <a class='menu-trigger'>
                         <span>Menu</span>
@@ -143,16 +163,7 @@ https://inside-dev.com/tm-580-woox-travel
   </div>
 
   <!-- ==========Reservation Start============= -->
-  <!-- <?php
-
-    echo $fullname . "<br>";
-    echo $number . "<br>";
-    echo $guest . "<br>";
-    echo $date . "<br>";
-    echo $destination . "<br>";
-  
-  ?> -->
-
+ 
 
   <div class="reservation-form">
     <div class="container">
@@ -171,13 +182,13 @@ https://inside-dev.com/tm-580-woox-travel
               <div class="col-lg-6">
                   <fieldset>
                       <label for="Name" class="form-label">Your Name</label>
-                      <input type="text" name="fullname" class="Name" placeholder="Enter Full Name" autocomplete="on" required>
+                      <input type="text" name="fullname" class="Name" placeholder="Enter Full Name">
                   </fieldset>
               </div>
               <div class="col-lg-6">
                 <fieldset>
                     <label for="Number" class="form-label">Your Phone Number</label>
-                    <input type="text" name="number" class="Number" placeholder="Ex. 03xx xxxxxxx" autocomplete="on" required>
+                    <input type="text" name="number" class="Number" placeholder="Ex. 03xx xxxxxxx">
                 </fieldset>
               </div>
               <div class="col-lg-6">
@@ -195,7 +206,7 @@ https://inside-dev.com/tm-580-woox-travel
               <div class="col-lg-6">
                 <fieldset>
                     <label for="Number" class="form-label">Check In Date</label>
-                    <input type="date" name="date" class="date" required>
+                    <input type="date" name="date" class="date">
                 </fieldset>
               </div>
               <div class="col-lg-12">
@@ -255,8 +266,60 @@ https://inside-dev.com/tm-580-woox-travel
       $(".option").removeClass("active");
       $(this).addClass("active"); 
     });
-  </script>
 
+
+document.getElementById("reservation-form").addEventListener("submit", function(e) {
+    let isValid = true;
+
+    // Clear previous error messages
+    const errorMessages = document.querySelectorAll('.error-message');
+    errorMessages.forEach(el => el.remove());
+
+    // Helper function to show error
+    function showError(inputElement, message) {
+        const error = document.createElement('div');
+        error.className = 'error-message';
+        error.style.color = 'red';
+        error.style.fontSize = '0.9em';
+        error.style.marginTop = '5px';
+        error.innerText = message;
+        inputElement.parentNode.appendChild(error);
+        isValid = false;
+    }
+
+    // Get form fields
+    const nameField = document.querySelector('input[name="fullname"]');
+    const phoneField = document.querySelector('input[name="number"]');
+    const guestField = document.querySelector('select[name="guest"]');
+    const dateField = document.querySelector('input[name="date"]');
+    const destinationField = document.querySelector('select[name="destination"]');
+
+    // Validate each
+    if (nameField.value.trim() === "") {
+        showError(nameField, "Name is required.");
+    }
+
+    if (phoneField.value.trim() === "") {
+        showError(phoneField, "Phone number is required.");
+    }
+
+    if (guestField.value === "ex. 3 or 4 or 5") {
+        showError(guestField, "Please select number of guests.");
+    }
+
+    if (dateField.value === "") {
+        showError(dateField, "Check-in date is required.");
+    }
+
+    if (destinationField.value === "ex. Kashmir") {
+        showError(destinationField, "Please select a destination.");
+    }
+
+    if (!isValid) {
+        e.preventDefault(); // Stop form submission if validation fails
+    }
+});
+</script>
   </body>
 
 </html>
